@@ -65,10 +65,14 @@ class EventController extends Controller
                         $q->where('OTType', $type);
                     })
                     ->when(!empty($sdate) && !empty($edate), function($q) use ($sdate, $edate) {
-                        $q->whereBetween('OTDateGo', [$sdate, $edate]);
-                        $q->orWhere(function($sq) use ($sdate, $edate) {
-                            $sq->where('OTDateBack', '>=', $sdate);
-                            $sq->where('OTDateBack', '<=', $edate);
+                        $q->whereBetween(\DB::raw('CAST(OTDateGo AS DATE)'), [$sdate, $edate]);
+                        $q->orWhere(function($sq) use ($sdate) {
+                            $sq->where(\DB::raw('CAST(OTDateGo AS DATE)'), '<=', $sdate);
+                            $sq->where(\DB::raw('CAST(OTDateBack AS DATE)'), '>=', $sdate);
+                        });
+                        $q->orWhere(function($sq) use ($edate) {
+                            $sq->where(\DB::raw('CAST(OTDateGo AS DATE)'), '<=', $edate);
+                            $sq->where(\DB::raw('CAST(OTDateBack AS DATE)'), '>=', $edate);
                         });
                     })
                     ->orderBy('OTDateGo', 'ASC')
