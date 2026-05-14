@@ -65,14 +65,16 @@ class LeaveController extends Controller
                         $q->where('LeaveName', $type);
                     })
                     ->when(!empty($sdate) && !empty($edate), function($q) use ($sdate, $edate) {
-                        $q->whereBetween(\DB::raw('CAST(LeaveDate1 AS DATE)'), [$sdate, $edate]);
-                        $q->orWhere(function($sq) use ($sdate) {
-                            $sq->where(\DB::raw('CAST(LeaveDate1 AS DATE)'), '<=', $sdate);
-                            $sq->where(\DB::raw('CAST(LeaveDate2 AS DATE)'), '>=', $sdate);
-                        });
-                        $q->orWhere(function($sq) use ($edate) {
-                            $sq->where(\DB::raw('CAST(LeaveDate1 AS DATE)'), '<=', $edate);
-                            $sq->where(\DB::raw('CAST(LeaveDate2 AS DATE)'), '>=', $edate);
+                        $q->where(function ($q) use ($sdate, $edate) {
+                            $q->whereBetween(\DB::raw('CAST(LeaveDate1 AS DATE)'), [$sdate, $edate]);
+                            $q->orWhere(function($sq) use ($sdate) {
+                                $sq->where(\DB::raw('CAST(LeaveDate1 AS DATE)'), '<=', $sdate);
+                                $sq->where(\DB::raw('CAST(LeaveDate2 AS DATE)'), '>=', $sdate);
+                            });
+                            $q->orWhere(function($sq) use ($edate) {
+                                $sq->where(\DB::raw('CAST(LeaveDate1 AS DATE)'), '<=', $edate);
+                                $sq->where(\DB::raw('CAST(LeaveDate2 AS DATE)'), '>=', $edate);
+                            });
                         });
                     })
                     ->where('LeaveStatus', 'อนุญาต')
