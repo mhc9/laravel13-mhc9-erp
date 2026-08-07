@@ -47,9 +47,9 @@ class LocationController extends Controller
         return response()->json($location);
     }
 
-    public function getLocationName(Request $tambonId)
+    public function getLocationName(Request $request, $tambonId)
     {
-        $tambon = Tambon::find($tambonId);
+        $tambon = Tambon::where('id', $tambonId)->first();
 
         $location = [
             'changwat'  => Changwat::find($tambon->chw_id),
