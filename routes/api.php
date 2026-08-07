@@ -59,6 +59,12 @@ Route::prefix('m2m')->group(function() {
     // Route::get('/members/init/form', [App\Http\Controllers\MemberController::class, 'getInitialFormData');
     // Route::post('/members', [App\Http\Controllers\MemberController::class, 'store');
 
+    /** Location */
+    Route::get('/locations/changwats', [App\Http\Controllers\LocationController::class, 'getChangwats']);
+    Route::get('/locations/amphurs', [App\Http\Controllers\LocationController::class, 'getAmphursByChangwat']);
+    Route::get('/locations/tambons', [App\Http\Controllers\LocationController::class, 'getTambonsByAmphur']);
+    Route::get('/locations/{tambonId}', [App\Http\Controllers\LocationController::class, 'getLocationName']);
+
     /** Calendar events */
     Route::get( '/events', [App\Http\Controllers\EventController::class, 'getAll']);
 
