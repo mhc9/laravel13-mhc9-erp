@@ -28,11 +28,16 @@ class Staff extends Model
     protected $guarded = [];
 
     /**
-     * The attributes that should be cast.
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
-    // protected $casts = [
-    //     'target_details' => 'array', // Automatically handles JSON conversion
-    // ];
+    protected $hidden = [
+        'pid',
+        'user_id',
+        'created_at',
+        'updated_at'
+    ];
 
     /** TODO: Boot method to set the UUID automatically */
     protected static function boot()

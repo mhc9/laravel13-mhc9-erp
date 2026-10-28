@@ -25,14 +25,14 @@ class User extends Authenticatable implements OAuthenticatable
      *
      * @var string
      */
-    // protected $keyType = 'string';
+    protected $keyType = 'string';
 
     /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
-    // public $incrementing = false;
+    public $incrementing = false;
 
     /**
      * Get the attributes that should be cast.
@@ -45,5 +45,23 @@ class User extends Authenticatable implements OAuthenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /** TODO: Boot method to set the UUID automatically */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Check if the UUID is already set (e.g., if manually provided)
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = Str::uuid(); // Generate a new UUID
+            }
+        });
+    }
+
+    public function staff()
+    {
+        return $this->hasOne(Staff::class, 'user_id', 'id');
     }
 }

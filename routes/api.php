@@ -9,9 +9,20 @@ Route::prefix('auth')->group(function() {
     Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
 });
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
+Route::middleware('auth:api')->prefix('oauth')->group(function() {
+    Route::get('/user', function (Request $request) {
+        return $request->user()->load(['staff']);
+    });
+
+    Route::post('/logout', function (Request $request) {
+        $token = $request->user()->token();
+
+        $token?->revoke();
+        $token?->refreshToken?->revoke();
+
+        return $response()->noContent();
+    });
+});
 
 Route::prefix('m2m')->group(function() {
     /** System */
@@ -21,7 +32,11 @@ Route::prefix('m2m')->group(function() {
     // Route::post( '/change-password', [App\Http\Controllers\ResetPasswordController::class, 'changePassword']);
 
     /** Users */
-    Route::get('/user-for-client', function (Request $request) {
+    Route::get('/users/{id}', function (Request $request, $id) {
+        return App\Models\User::with('staff')->find($id);
+    });
+
+    Route::get('/users', function (Request $request) {
         return App\Models\User::all();
     });
 
