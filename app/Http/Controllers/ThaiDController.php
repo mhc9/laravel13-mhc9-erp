@@ -32,12 +32,14 @@ class ThaiDController extends Controller
         abort_unless($staff?->user, 403, 'บัญชี ThaID นี้ยังไม่ได้รับสิทธิ์ใช้งานระบบ');
 
         // Tell Laravel to log this transient object into the session
-        auth()->guard('external')->login($staff->user);
+        auth()->guard('web')->login($staff->user);
 
         // Regenerate the session ID for security
         $request->session()->regenerate();
 
-        // ถ้าเริ่มต้นจาก /oauth/authorize จะกลับไปจุดนั้น
-        return redirect()->intended('/');
+        // Redirect กลับไป frontend
+        $redectUrl = $request->session()->get('passport_redirect_uri', '/');
+
+        return redirect()->intended($redectUrl);
     }
 }

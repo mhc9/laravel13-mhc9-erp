@@ -56,10 +56,10 @@ class MojoAuthService
         throw new \LogicException('Implement ตาม Keycloak integration specification');
     }
 
-    public function getUserInfo(string $token)
+    public function getUserInfo(string $token): object
     {
         $response = Http::withToken($token)->get(env('MOJOAUTH_ISSUER_URL') . '/oauth/userinfo');
 
-        return $response->json();
+        return (object) $response->json();
     }
 }

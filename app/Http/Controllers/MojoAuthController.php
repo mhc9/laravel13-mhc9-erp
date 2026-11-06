@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
-use App\Services\KeycloakService;
+use App\Services\MojoAuthService;
 use App\Models\User;
 use App\Models\Staff;
 
@@ -26,18 +26,20 @@ class MojoAuthController extends Controller
         $userInfo = $mojoAuthService->getUserInfo($verifiedIdentity->access_token);
 
         // Find a user based on email that retrieved from MojoAuth Service
-        $user = User::where('email', $verifiedIdentity->email)->first();
+        $user = User::where('email', $userInfo->email)->first();
 
         // นโยบายแนะนำ: ให้ผู้ดูแลผูก MojoAuth กับบัญชีไว้ก่อน
         abort_unless($user, 403, 'บัญชี MojoAuth นี้ยังไม่ได้รับสิทธิ์ใช้งานระบบ');
 
         // Tell Laravel to log this transient object into the session
-        auth()->guard('external')->login($user);
+        auth()->guard('web')->login($user);
 
         // Regenerate the session ID for security
         $request->session()->regenerate();
 
         // Redirect กลับไป frontend
-        return redirect()->intended('/');
+        $redectUrl = $request->session()->get('passport_redirect_uri', '/');
+
+        return redirect()->intended($redectUrl);
     }
 }
