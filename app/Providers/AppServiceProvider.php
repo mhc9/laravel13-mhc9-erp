@@ -8,6 +8,7 @@ use Laravel\Passport\Passport;
 // use Laravel\Passport\Contracts\AuthorizationViewResponse as AuthorizationViewResponseContract;
 // use App\Http\Responses\PassportCustomResponse;
 use App\Models\Passport\Client;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -54,5 +55,10 @@ class AppServiceProvider extends ServiceProvider
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::personalAccessTokensExpireIn(now()->addMonths(6));
+
+        /** Register the custom user provider */
+        Auth::provider('external_api', function ($app, array $config) {
+            return new ExternalUserProvider();
+        });
     }
 }

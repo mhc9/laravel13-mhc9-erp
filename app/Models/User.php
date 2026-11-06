@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
 // use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Support\Str; // TODO: Import the Str facade for UUID
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
