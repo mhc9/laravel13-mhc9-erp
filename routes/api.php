@@ -11,7 +11,18 @@ Route::prefix('auth')->group(function() {
 
 Route::middleware('auth:api')->prefix('oauth')->group(function() {
     Route::get('/user', function (Request $request) {
-        return $request->user()->load(['staff']);
+        $user = $request->user()->load([
+            'employee' => function ($query) {
+                $query->minimal();
+            },
+            'employee.organization:id,name,hcode',
+            'employee.organization.hospital:hcode,name',
+            'member',
+            'member.organization:id,name,hcode',
+            'member.organization.hospital:hcode,name',
+        ]);
+
+        return response()->json($user);
     });
 
     Route::post('/logout', function (Request $request) {

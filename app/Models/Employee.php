@@ -17,6 +17,9 @@ class Employee extends Model
     /** Set all the fields mass assignable */
     protected $guarded = [];
 
+    /** Append the custom attribute */
+    protected $appends = ['full_name', 'full_address', 'full_position'];
+
     public function prefix()
     {
         return $this->belongsTo(Prefix::class, 'prefix_id', 'id');
@@ -47,8 +50,70 @@ class Employee extends Model
         return $this->belongsTo(Level::class, 'level_id', 'id');
     }
 
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
     public function memberOf()
     {
-        return $this->hasMany(Member::class, 'employee_id', 'id');
+        return $this->hasMany(Section::class, 'employee_id', 'id');
+    }
+
+    public function getFullNameAttribute()
+    {
+        $prefix = $this->prefix?->name ?? '';
+        $firstName = $this->firstname ?? '';
+        $lastName = $this->lastname ?? '';
+
+        return trim("{$prefix}{$firstName} {$lastName}");
+    }
+
+    public function getFullAddressAttribute()
+    {
+        $addressParts = [];
+
+        if ($this->address) {
+            $addressParts[] = $this->address;
+        }
+
+        if ($this->tambon?->name) {
+            $addressParts[] = "ต. {$this->tambon->name}";
+        }
+
+        if ($this->amphur?->name) {
+            $addressParts[] = "อ. {$this->amphur->name}";
+        }
+
+        if ($this->changwat?->name) {
+            $addressParts[] = "จ. {$this->changwat->name}";
+        }
+
+        if ($this->zipcode) {
+            $addressParts[] = " {$this->zipcode}";
+        }
+
+        return implode(' ', $addressParts);
+    }
+
+    public function getFullPositionAttribute()
+    {
+        $position = $this->position?->name ?? '';
+        $level = $this->level?->name ?? '';
+
+        return trim("{$position}{$level}");
+    }
+
+    public function scopeMinimal($query)
+    {
+        return $query->select(
+            'id','firstname','lastname','address','zipcode','avatar_uri','organization_id','user_id',
+            'prefix_id','tambon_id','amphur_id','changwat_id','position_id', 'level_id'
+        );
     }
 }

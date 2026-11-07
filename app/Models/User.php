@@ -61,8 +61,13 @@ class User extends Authenticatable implements OAuthenticatable
         });
     }
 
-    public function staff()
+    public function employee()
     {
-        return $this->hasOne(Staff::class, 'user_id', 'id');
+        return $this->hasOne(Employee::class, 'user_id', 'id');
+    }
+
+    public function member()
+    {
+        return $this->hasOne(Member::class, 'user_id', 'id');
     }
 }

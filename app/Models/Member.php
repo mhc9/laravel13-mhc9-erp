@@ -3,31 +3,62 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str; // TODO: Import the Str facade for UUID
 
 class Member extends Model
 {
     protected $table = 'members';
+
+    /** Set primary key name manually if not id */
     // protected $primaryKey = 'id';
-    // public $incrementing = false; // false = ไม่ใช้ options auto increment
-    // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
+    
+    /** TODO: The primary key type is a string */
+    protected $keyType = 'string';
 
-    public function duty()
+    /** TODO: false = ไม่ใช้ options auto increment */
+    public $incrementing = false;
+
+    /** false = ไม่ใช้ field updated_at และ created_at */
+    // public $timestamps = false;
+
+    /** Set particular field mass assignable */
+    // protected $fillable = ['employee_id'];
+
+    /** Set all the fields mass assignable */
+    protected $guarded = [];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'pid',
+        'user_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    /** TODO: Boot method to set the UUID automatically */
+    protected static function boot()
     {
-        return $this->belongsTo(Duty::class, 'duty_id', 'id');
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Check if the UUID is already set (e.g., if manually provided)
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = Str::uuid(); // Generate a new UUID
+            }
+        });
     }
 
-    public function department()
+    public function organization()
     {
-        return $this->belongsTo(Department::class, 'department_id', 'id');
+        return $this->belongsTo(Organization::class, 'organization_id', 'id');
     }
 
-    public function division()
+    public function user()
     {
-        return $this->belongsTo(Division::class, 'division_id', 'id');
-    }
-
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class, 'employee_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

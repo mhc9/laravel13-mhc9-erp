@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use App\Services\ThaiDService;
 use App\Models\User;
-use App\Models\Staff;
+use App\Models\Employee;
 
 class ThaiDController extends Controller
 {
@@ -26,13 +26,13 @@ class ThaiDController extends Controller
         $verifiedIdentity = $thaiD->verifyCallback($request);
 
         // Find a user based on pid that retrieved from ThaiD Service
-        $staff = Staff::where('pid', $verifiedIdentity->pid)->first();
+        $employee = Employee::where('pid', $verifiedIdentity->pid)->first();
 
         // นโยบายแนะนำ: ให้ผู้ดูแลผูก ThaiD กับบัญชีไว้ก่อน
-        abort_unless($staff?->user, 403, 'บัญชี ThaID นี้ยังไม่ได้รับสิทธิ์ใช้งานระบบ');
+        abort_unless($employee?->user, 403, 'บัญชี ThaID นี้ยังไม่ได้รับสิทธิ์ใช้งานระบบ');
 
         // Tell Laravel to log this transient object into the session
-        auth()->guard('web')->login($staff->user);
+        auth()->guard('web')->login($employee?->user);
 
         // Regenerate the session ID for security
         $request->session()->regenerate();
