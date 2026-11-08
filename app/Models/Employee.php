@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 
 class Employee extends Model
 {
@@ -109,9 +112,23 @@ class Employee extends Model
         return trim("{$position}{$level}");
     }
 
-    public function scopeMinimal($query)
+    protected function avatarUri(): Attribute
     {
-        return $query->select(
+        return Attribute::make(
+            get: fn ($value) => $value ? asset('img/' . $value) : null,
+        );
+    }
+
+    /**
+     * Define the scope using a PHP attribute
+     *
+     * @param [type] $query
+     * @return void
+     */
+    #[Scope]
+    protected function forUserInfo(Builder $query): void
+    {
+        $query->select(
             'id','firstname','lastname','address','zipcode','avatar_uri','organization_id','user_id',
             'prefix_id','tambon_id','amphur_id','changwat_id','position_id', 'level_id'
         );

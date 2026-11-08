@@ -12,9 +12,7 @@ Route::prefix('auth')->group(function() {
 Route::middleware('auth:api')->prefix('oauth')->group(function() {
     Route::get('/user', function (Request $request) {
         $user = $request->user()->load([
-            'employee' => function ($query) {
-                $query->minimal();
-            },
+            'employee' => fn ($q) => $q->forUserInfo(),
             'employee.organization:id,name,hcode',
             'employee.organization.hospital:hcode,name',
             'member',
