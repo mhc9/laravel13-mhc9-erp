@@ -36,7 +36,7 @@ class MojoAuthService
         abort_unless(
             strlen($state) > 0 && $state === (string) $request->string('state'),
             403,
-            'Invalid Keycloak state'
+            'Invalid MojoAuth state'
         );
 
         // 1. แลก authorization code เป็น token แบบ server-to-server
@@ -53,7 +53,7 @@ class MojoAuthService
 
         return (object) $response->json();
 
-        throw new \LogicException('Implement ตาม Keycloak integration specification');
+        throw new \LogicException('Implement ตาม MojoAuth integration specification');
     }
 
     public function getUserInfo(string $token): object
